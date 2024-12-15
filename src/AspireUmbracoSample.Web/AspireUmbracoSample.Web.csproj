@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <UserSecretsId>5fd802ca-2f38-42fe-baec-66343a0f1f7d</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Umbraco base libraries -->
+        <PackageReference Include="Umbraco.Cms" Version="13.5.2"/>
+        <PackageReference Include="Umbraco.StorageProviders.AzureBlob" Version="13.1.0"/>
+        <PackageReference Include="Umbraco.StorageProviders.AzureBlob.ImageSharp" Version="13.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Instrumentation libraries -->
+        <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.2.2"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Opt-in to app-local ICU to ensure consistent globalization APIs across different platforms -->
+        <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3"/>
+        <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="72.1.0.3" Condition="$(RuntimeIdentifier.StartsWith('linux')) or $(RuntimeIdentifier.StartsWith('win')) or ('$(RuntimeIdentifier)' == '' and !$([MSBuild]::IsOSPlatform('osx')))"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <!-- Razor files are needed for the backoffice to work correctly -->
+        <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Remove RazorCompileOnBuild and RazorCompileOnPublish when not using ModelsMode InMemoryAuto -->
+        <RazorCompileOnBuild>false</RazorCompileOnBuild>
+        <RazorCompileOnPublish>false</RazorCompileOnPublish>
+    </PropertyGroup>
+
+</Project>

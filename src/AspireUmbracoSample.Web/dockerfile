@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+ENV DOTNET_NUGET_SIGNATURE_VERIFICATION=false
+USER app
+USER $APP_UID
+WORKDIR /app
+EXPOSE 8081
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ENV DOTNET_NUGET_SIGNATURE_VERIFICATION=false
+ARG BUILD_CONFIGURATION=Debug
+WORKDIR /src
+COPY . .
+RUN dotnet build "src/AspireUmbracoSample.Web/AspireUmbracoSample.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ENV DOTNET_NUGET_SIGNATURE_VERIFICATION=false
+ARG BUILD_CONFIGURATION=Debug
+RUN dotnet publish "src/AspireUmbracoSample.Web/AspireUmbracoSample.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "AspireUmbracoSample.Web.dll"]
